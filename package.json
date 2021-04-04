@@ -1,6 +1,6 @@
 {
   "name": "wx-md-loader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a simple loader parse markdown fence block to JS executable code",
   "keywords": [
     "webpack loader",
