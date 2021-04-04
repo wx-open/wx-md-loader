@@ -11,7 +11,7 @@
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "prepare": "husky add .husky/commit-msg & husky add .husky/pre-commit",
+    "init:hook": "husky add .husky/commit-msg & husky add .husky/pre-commit",
     "test": "jest --ci --coverage",
     "codecov": "codecov",
     "compile": "gulp",
@@ -64,7 +64,6 @@
     "@types/markdown-it": "^12.0.1",
     "@types/merge2": "^1.3.0",
     "@types/node": "^11.15.16",
-    "@types/schema-utils": "^2.4.0",
     "@types/through2": "^2.0.36",
     "markdown-it": "^12.0.4",
     "merge2": "^1.4.1",

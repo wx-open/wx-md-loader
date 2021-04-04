@@ -45,3 +45,8 @@ const rules = [
 
 - type: `string` default `default`, enum value can be `default` or `source`,`default` used to parse markdown and `source` used to generate markdown meta information
 
+
+
+# LICENSE
+
+MIT
