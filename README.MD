@@ -1,6 +1,12 @@
 # wx-api-md-loader
 
-use for parse markdown fence block to JS executable code
+A simple webpack loader used to parse markdown fence block to JS executable code
+
+[![npm][npm]][npm-url]
+[![deps][deps]][deps-url]
+[![license][license]][license-url]
+[![build][build]](build-url)
+
 
 ## Configuration
 
@@ -50,3 +56,22 @@ const rules = [
 # LICENSE
 
 MIT
+
+
+[npm]: https://img.shields.io/npm/v/@wx-open/wx-api-md-loader
+[npm-url]: https://www.npmjs.com/package/@wx-open/wx-api-md-loader
+
+[deps]: https://img.shields.io/david/webpack/webpack.svg
+[deps-url]: #
+
+
+[prs]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg
+[prs-url]: https://github.com/wx-open/wx-api-md-loader/pulls
+
+[license]: https://img.shields.io/github/license/wx-open/wx-api-md-loader
+[license-url]: #
+[cover]: https://badgen.net/codecov/c/github/wx-open/wx-api-md-loader/master
+[cover-url]: https://codecov.io/github/wx-open/wx-api-md-loader/
+
+[build]:https://travis-ci.com/wx-open/wx-api-md-loader.svg?branch=master
+[build-url]:https://travis-ci.com/wx-open/wx-api-md-loader
