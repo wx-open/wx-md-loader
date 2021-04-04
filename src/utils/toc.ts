@@ -5,6 +5,8 @@ import omit from 'omit.js';
 import { toTree } from './tree';
 import fs from 'fs';
 import Markdown from 'markdown-it';
+import { getTemplatePath } from './helpers';
+
 const md = new Markdown();
 
 export interface EntryItem {
@@ -16,6 +18,7 @@ export interface EntryItem {
 
 export interface EntryConfig {
   cwd?: string;
+  template?: string;
   groups: EntryItem[];
   inject?: object;
 }
@@ -197,7 +200,7 @@ function getContextPathOfMd(cwd: string, basePath: string) {
 }
 
 export function getEntryList(options: EntryConfig) {
-  const { groups, cwd, inject } = options;
+  const { groups, cwd, inject, template } = options;
   const rCwd = cwd || process.cwd();
   return Promise.all(
     sortByOrder(groups).map((i) =>
@@ -206,6 +209,7 @@ export function getEntryList(options: EntryConfig) {
   ).then((data) => ({
     cwd: rCwd,
     data,
+    template: getTemplatePath(template),
     inject,
   }));
 }

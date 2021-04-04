@@ -12,6 +12,10 @@
       "type": "string",
       "description": "the context path"
     },
+    "template": {
+      "type": "string",
+      "description": "the template src path, default use wx-api-docs template"
+    },
     "groups": {
       "type": "array",
       "items": {

@@ -1,7 +1,7 @@
 import { loader } from 'webpack';
 import Markdown from 'markdown-it';
 import { getMetaList, getRouteEntryDepDir, parseMeta } from './utils/toc';
-import { format, getLoaderRouteEntry, normalizeOptions } from './utils/helpers';
+import { format, getLoaderRouteEntry, getTemplatePath, normalizeOptions } from './utils/helpers';
 import transformReact from './utils/transform';
 import validate from 'schema-utils';
 import { Schema } from 'schema-utils/declarations/validate';
@@ -76,7 +76,7 @@ const localMdLoader: loader.Loader = function (source) {
   }
   if (dataType === 'source') {
     getLoaderRouteEntry(options)
-      .then(({ cwd, data: entryList, inject }) => {
+      .then(({ cwd, data: entryList, inject, template }) => {
         const data = entryList.map((i) => {
           i.fileList.forEach((f) => {
             loaderContext.addDependency(f);
@@ -88,8 +88,7 @@ const localMdLoader: loader.Loader = function (source) {
         dirs.forEach((i) => {
           loaderContext.addContextDependency(i);
         });
-        const wxApiDocsPath = require.resolve('wx-api-docs');
-        const dir = path.resolve(path.dirname(wxApiDocsPath), 'src');
+        const dir = template;
         const src = cwd || path.resolve(process.cwd(), 'src');
         const rel = path.relative(dir, src).replace(/\\/g, '/');
         const res = `
