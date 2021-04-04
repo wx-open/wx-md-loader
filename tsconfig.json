@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "noImplicitAny": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "dom",
+      "es5",
+      "es2017",
+      "es2020",
+      "es7"
+    ],
+    "typeRoots": [
+      "./typings",
+      "./node_modules/@types"
+    ],
+    "noEmit": false,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "baseUrl": "."
+  },
+  "include": [
+    "src/**/**.ts",
+    "src/docs/**/**.ts",
+    "typings"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "dist"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "title": "local-md-loader options",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "configFile": {
+      "type": "boolean",
+      "description": "use config file",
+      "default": true
+    },
+    "cwd": {
+      "type": "string",
+      "description": "the context path"
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "title",
+            "description": "the show text of route entry"
+          },
+          "route": {
+            "type": "string",
+            "title": "route",
+            "description": "the show text of route entry"
+          },
+          "order": {
+            "type": "number",
+            "title": "order",
+            "description": "the show text of route entry"
+          },
+          "basePath": {
+            "type": "string",
+            "title": "basePath",
+            "description": "the show text of route entry"
+          }
+        },
+        "required": [
+          "title",
+          "basePath"
+        ]
+      }
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "default",
+        "page",
+        "code",
+        "source"
+      ]
+    },
+    "inject": {
+      "type": "object",
+      "default": {}
+    }
+  },
+  "required": [
+    "groups"
+  ]
+}
