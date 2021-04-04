@@ -1,6 +1,6 @@
 {
-  "name": "wx-api-md-loader",
-  "version": "0.0.0",
+  "name": "wx-md-loader",
+  "version": "0.0.1",
   "description": "a simple loader parse markdown fence block to JS executable code",
   "keywords": [
     "webpack loader",
@@ -18,11 +18,12 @@
     "watch": "gulp watchLd",
     "lint": "eslint --ext .tsx,.ts --fix ./src",
     "lint:fix": "eslint --format ./node_modules/eslint-friendly-formatter ./src .eslintrc.js --fix",
-    "prepublish": "npm run compile"
+    "`prepublishOnly": "npm run compile",
+    "pub": "npm publish --access=public"
   },
   "author": "ibreeze2017",
   "license": "MIT",
-  "homepage": "https://github.com/wx-open/wx-api-md-loader",
+  "homepage": "https://github.com/wx-open/wx-md-loader",
   "files": [
     "lib",
     "package.json",
@@ -47,10 +48,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wx-open/wx-api-md-loader.git"
+    "url": "https://github.com/wx-open/wx-md-loader.git"
   },
   "bugs": {
-    "url": "https://github.com/wx-open/wx-api-md-loader/issues"
+    "url": "https://github.com/wx-open/wx-md-loader/issues"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

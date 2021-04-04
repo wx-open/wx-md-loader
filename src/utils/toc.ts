@@ -5,7 +5,6 @@ import omit from 'omit.js';
 import { toTree } from './tree';
 import fs from 'fs';
 import Markdown from 'markdown-it';
-
 const md = new Markdown();
 
 export interface EntryItem {
@@ -27,7 +26,7 @@ interface MetaData {
   fileList: string[];
 }
 
-export function getTreeData(entryKey: string, pattern: string, basePath: string) {
+export function getTreeData(entryKey: string, pattern: string, basePath: string, ctxPath: string) {
   return new Promise<MetaData>((resolve, reject) => {
     glob(
       pattern + '.md',
@@ -57,7 +56,7 @@ export function getTreeData(entryKey: string, pattern: string, basePath: string)
           const routeKey = filename.replace('.md', '').replace(/\./g, '-').replace(/\//g, '-');
           const name = filename.replace(/\.md$/, '');
           const route = `${entryKey}/${routeKey}`;
-          const contextPath = entryKey.replace(/^\//, '') + '/' + name;
+          const contextPath = ctxPath.replace(/^\//, '') + '/' + name;
           mapping[routeKey] = {
             name,
             filename,
@@ -86,31 +85,16 @@ export function getTreeData(entryKey: string, pattern: string, basePath: string)
           return meta;
         });
         // .filter(i => i.toc)
-        const treeData = metaList
-          .sort((a, b) => {
-            const oa = Number(a.order);
-            const ob = Number(b.order);
-            if (!isNaN(oa) && !isNaN(ob)) {
-              return oa - ob;
-            }
-            if (isNaN(oa)) {
-              return 1;
-            }
-            if (isNaN(ob)) {
-              return -1;
-            }
-            return 0;
-          })
-          .map((i) => {
-            return {
-              id: i.title,
-              pid: i.cate || -1,
-              children: i.chidren,
-              data: {
-                ...omit(i, ['children']),
-              },
-            };
-          });
+        const treeData = sortByOrder(metaList).map((i) => {
+          return {
+            id: i.title,
+            pid: i.cate || -1,
+            children: i.chidren,
+            data: {
+              ...omit(i, ['children']),
+            },
+          };
+        });
         const tree = toTree(
           treeData,
           'pid',
@@ -159,8 +143,8 @@ export function parseMeta(content: string) {
   }, {});
 }
 
-function getEntryData(title: string, route: string, basePath: string) {
-  return getTreeData(route, '**/**', basePath).then((res) => {
+function getEntryData(title: string, route: string, basePath: string, contextPath: string) {
+  return getTreeData(route, '**/**', basePath, contextPath).then((res) => {
     const { fileList, ...restData } = res;
     return {
       title,
@@ -190,13 +174,37 @@ function getWxConfig(cwd = process.cwd()): EntryConfig {
   };
 }
 
+export function sortByOrder<T extends { order?: string | number }>(arr: T[]) {
+  return arr.sort((a, b) => {
+    const oa = Number(a.order);
+    const ob = Number(b.order);
+    if (!isNaN(oa) && !isNaN(ob)) {
+      return oa - ob;
+    }
+    if (isNaN(oa)) {
+      return 1;
+    }
+    if (isNaN(ob)) {
+      return -1;
+    }
+    return 0;
+  });
+}
+
+function getContextPathOfMd(cwd: string, basePath: string) {
+  const src = path.resolve(cwd, basePath);
+  return path.relative(cwd, src).replace(/\\/g, '/');
+}
+
 export function getEntryList(options: EntryConfig) {
   const { groups, cwd, inject } = options;
+  const rCwd = cwd || process.cwd();
   return Promise.all(
-    groups.map((i) => {
-      return getEntryData(i.title, i.route, path.resolve(cwd || process.cwd(), i.basePath));
-    })
+    sortByOrder(groups).map((i) =>
+      getEntryData(i.title, i.route, path.resolve(rCwd, i.basePath), getContextPathOfMd(rCwd, i.basePath))
+    )
   ).then((data) => ({
+    cwd: rCwd,
     data,
     inject,
   }));

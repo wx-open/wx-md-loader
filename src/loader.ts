@@ -1,4 +1,3 @@
-import path from 'path';
 import { loader } from 'webpack';
 import Markdown from 'markdown-it';
 import { getMetaList, getRouteEntryDepDir, parseMeta } from './utils/toc';
@@ -8,6 +7,7 @@ import validate from 'schema-utils';
 import { Schema } from 'schema-utils/declarations/validate';
 import loaderUtils from 'loader-utils';
 import optionSchema from './schema.json';
+import path from 'path';
 
 const localMdLoader: loader.Loader = function (source) {
   const loaderContext = this;
@@ -76,7 +76,7 @@ const localMdLoader: loader.Loader = function (source) {
   }
   if (dataType === 'source') {
     getLoaderRouteEntry(options)
-      .then(({ data: entryList, inject }) => {
+      .then(({ cwd, data: entryList, inject }) => {
         const data = entryList.map((i) => {
           i.fileList.forEach((f) => {
             loaderContext.addDependency(f);
@@ -88,7 +88,15 @@ const localMdLoader: loader.Loader = function (source) {
         dirs.forEach((i) => {
           loaderContext.addContextDependency(i);
         });
-        const res = `export default {
+        const wxApiDocsPath = require.resolve('wx-api-docs');
+        const dir = path.resolve(path.dirname(wxApiDocsPath), 'src');
+        const src = cwd || path.resolve(process.cwd(), 'src');
+        const rel = path.relative(dir, src).replace(/\\/g, '/');
+        const res = `
+        export async function loadMd(name: string) {
+          return import(\`${rel}/\${name}.md\`);
+       }
+        export default {
           inject:${JSON.stringify(inject)},
           meta:${JSON.stringify(data)},
        }`;
@@ -100,10 +108,10 @@ const localMdLoader: loader.Loader = function (source) {
     return;
   }
   const babelrc = path.resolve(__dirname, './config/babel.wx.js');
-  const p1 = loaderUtils.stringifyRequest(this, '!local-md-loader?type=page!' + this.resourcePath);
+  const p1 = loaderUtils.stringifyRequest(this, '!wx-md-loader?type=page!' + this.resourcePath);
   const p = loaderUtils.stringifyRequest(
     this,
-    `!babel-loader?configFile=${babelrc}!local-md-loader?type=code!${this.resourcePath}`
+    `!babel-loader?configFile=${babelrc}!wx-md-loader?type=code!${this.resourcePath}`
   );
   const content = `import code from ${p};
       import html from ${p1};
@@ -114,5 +122,4 @@ const localMdLoader: loader.Loader = function (source) {
 // export function pitch(remainingRequest: string, precedingRequest: string, data: any) {
 //   // console.log('Loader Pitch', data);
 // }
-
 export default localMdLoader;

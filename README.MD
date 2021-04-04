@@ -5,7 +5,8 @@ A simple webpack loader used to parse markdown fence block to JS executable code
 [![npm][npm]][npm-url]
 [![deps][deps]][deps-url]
 [![license][license]][license-url]
-[![build][build]](build-url)
+[![build][build]][build-url]
+[![prs][prs]][prs-url]
 
 
 ## Configuration
