@@ -61,8 +61,8 @@ const rules = [
 MIT
 
 
-[npm]: https://img.shields.io/npm/v/@wx-open/wx-md-loader
-[npm-url]: https://www.npmjs.com/package/@wx-open/wx-md-loader
+[npm]: https://img.shields.io/npm/v/wx-md-loader
+[npm-url]: https://www.npmjs.com/package/wx-md-loader
 
 [deps]: https://img.shields.io/david/webpack/webpack.svg
 [deps-url]: #
