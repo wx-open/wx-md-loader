@@ -136,7 +136,7 @@ export function getMetaList(obj: Token[]) {
 
 export function parseMeta(content: string) {
   return content.split(/[\n\r]+/).reduce<Record<string, string>>((acc, c) => {
-    const res = c.match(/\s*([^\s]+)\s*:\s*([^\s]+)\s*/);
+    const res = c.match(/\s*([^\s]+)\s*:\s*(.+)\s*/);
     if (!res) {
       return acc;
     }
