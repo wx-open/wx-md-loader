@@ -92,9 +92,12 @@ const localMdLoader: loader.Loader = function (source) {
         const src = cwd || path.resolve(process.cwd(), 'src');
         const rel = path.relative(dir, src).replace(/\\/g, '/');
         const res = `
-        export async function loadMd(name: string) {
-          return import(\`${rel}/\${name}.md\`);
-       }
+         export async function loadMd(name: string) {
+            return import(\`${rel}/\${name}.md\`);
+         }
+         export function loadAssets(assetPath: string) {
+            return require(\`${rel}/\${assetPath}\`).default;
+         }
         export default {
           inject:${JSON.stringify(inject)},
           meta:${JSON.stringify(data)},
