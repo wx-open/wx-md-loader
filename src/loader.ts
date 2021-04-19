@@ -95,9 +95,14 @@ const localMdLoader: loader.Loader = function (source) {
          export async function loadMd(name: string) {
             return import(\`${rel}/\${name}.md\`);
          }
-         export function loadAssets(assetPath: string) {
-            return require(\`${rel}/\${assetPath}\`).default;
-         }
+        export function loadAssets(assetPath: string) {
+          const context = require.context(\`${rel}\`, true, /\\.(jpe?g|png|bmp|gif|v\.svg|webp)$/); 
+          let imgPath = assetPath;
+          if(!/^\.\\//.test(assetPath)){
+            imgPath = './'+assetPath;
+          }
+          return context(imgPath).default;
+       }
         export default {
           inject:${JSON.stringify(inject)},
           meta:${JSON.stringify(data)},
