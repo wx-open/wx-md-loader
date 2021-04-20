@@ -23,6 +23,16 @@ const localMdLoader: loader.Loader = function (source) {
   }
   const dataType = options.type;
   if (dataType === 'code') {
+    const metaList = getMetaList(obj);
+    let meta: Record<string, any> = {};
+    if (metaList.length) {
+      meta = parseMeta(metaList[0].content);
+    }
+    if (meta.only === 'true') {
+      callback(null, 'export default ()=>({only:true})');
+      return;
+    }
+
     if (!codeList.length) {
       callback(null, 'export default ()=>{}');
       return;
