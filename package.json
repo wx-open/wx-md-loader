@@ -1,6 +1,6 @@
 {
   "name": "wx-md-loader",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "a simple loader parse markdown fence block to JS executable code",
   "keywords": [
     "webpack loader",
@@ -82,6 +82,8 @@
     "omit.js": "^2.0.2",
     "prettier": "^2.2.1",
     "schema-utils": "^2.7.0",
+    "@types/md5": "^2.3.0",
+    "md5": "^2.3.0",
     "through2": "^4.0.2"
   },
   "devDependencies": {
@@ -89,7 +91,6 @@
     "@commitlint/config-conventional": "^12.0.1",
     "@types/gulp": "^4.0.6",
     "@types/jest": "^26.0.22",
-    "@types/md5": "^2.3.0",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
     "codecov": "^3.8.1",
@@ -110,7 +111,6 @@
     "husky": "^6.0.0",
     "jest": "^26.6.3",
     "lint-staged": "^10.5.4",
-    "md5": "^2.3.0",
     "merge2": "^1.4.1",
     "ts-jest": "^26.5.4",
     "typescript": "^3.3.3"
