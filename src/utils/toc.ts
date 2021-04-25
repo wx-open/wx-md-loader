@@ -6,6 +6,7 @@ import { toTree } from './tree';
 import fs from 'fs';
 import Markdown from 'markdown-it';
 import { getTemplatePath } from './helpers';
+import { getMd5 } from './hash';
 
 const md = new Markdown();
 
@@ -66,12 +67,15 @@ export function getTreeData(entryKey: string, pattern: string, basePath: string,
             route,
             contextPath,
           };
+          const contents = getTocTreeFromTokens(tokens);
           let meta: Record<string, any> = {
             filename,
             routeKey,
             name,
             route,
             contextPath,
+            contents,
+            tocNodes: getTocList(contents),
           };
 
           let desc = '';
@@ -223,4 +227,86 @@ export function getRouteEntryDepDir(cwd = process.cwd()) {
   return groups.map((i) => {
     return path.resolve(_cwd || process.cwd(), i.basePath);
   });
+}
+
+export function getTocByTokens(tokens: Token[]) {
+  const results: [string, number][] = [];
+  let open = false;
+  let tag = '';
+  tokens.forEach((i) => {
+    if (i.type === 'heading_open') {
+      open = true;
+      tag = i.tag;
+      return;
+    }
+    if (open) {
+      results.push([i.content, parseInt(tag.slice(1), 10)]);
+      open = false;
+      tag = '';
+    }
+  });
+  return results;
+}
+
+export function getToc(content: string) {
+  const tokens = new Markdown().parse(content, {});
+  return getTocByTokens(tokens);
+}
+
+export interface TocItem {
+  id: string;
+  title: string;
+  data: any;
+  children: TocItem[];
+}
+
+export function getTocTree(res: [string, number][]) {
+  function loop(res: [string, number][], path: string[] = [], max?: number, callback?: Function) {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const cb = callback || (() => {});
+    const result: TocItem[] = [];
+    for (let i = 0; i < res.length; i++) {
+      const [title, level] = res[i];
+      if (typeof max !== 'undefined' && level <= max) {
+        break;
+      }
+      cb();
+      const p = path.concat(title);
+      const hash = getMd5(p.join('$'));
+      result.push({
+        id: hash,
+        title,
+        data: {
+          path: p,
+          hash,
+          level,
+        },
+        children: loop(res.slice(i + 1), p, level, () => {
+          i++;
+          cb();
+        }),
+      });
+    }
+    return result;
+  }
+
+  return loop(res);
+}
+
+export function getTocTreeFromString(content: string) {
+  return getTocTree(getToc(content));
+}
+
+export function getTocTreeFromTokens(tokens: Token[]) {
+  return getTocTree(getTocByTokens(tokens));
+}
+
+export function getTocList(toc: TocItem[], r: TocItem[] = []) {
+  toc.forEach((i) => {
+    r.push(i);
+    if (i.children.length) {
+      getTocList(i.children, r);
+    }
+  });
+  return r;
 }
