@@ -18,7 +18,7 @@
     "watch": "gulp watchLd",
     "lint": "eslint --ext .tsx,.ts --fix ./src",
     "lint:fix": "eslint --format ./node_modules/eslint-friendly-formatter ./src .eslintrc.js --fix",
-    "`prepublishOnly": "npm run compile",
+    "prepublishOnly": "npm run compile",
     "pub": "npm publish --access=public"
   },
   "author": "ibreeze2017",
