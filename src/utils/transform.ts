@@ -59,7 +59,7 @@ function getBabelConfig(modules = false) {
         {
           modules,
           targets: {
-            browsers: ['last 2 versions', 'Firefox ESR', '> 1%', 'ie >= 9', 'iOS >= 8', 'Android >= 4'],
+            browsers: ['last 2 versions', 'Firefox ESR', '> 1%'],
           },
         },
       ],
@@ -87,6 +87,8 @@ function getBabelConfig(modules = false) {
           loose: true,
         },
       ],
+      ['@babel/plugin-proposal-private-methods', { loose: true }],
+      ['@babel/plugin-proposal-private-property-in-object', { 'loose': true }],
       [resolve('@babel/plugin-syntax-dynamic-import')],
       [resolve('@babel/plugin-transform-regenerator')],
     ],

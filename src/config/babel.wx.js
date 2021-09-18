@@ -35,6 +35,7 @@ function getBabelConfig(modules) {
         },
       ],
       ['@babel/plugin-proposal-private-methods', { loose: true }],
+      ['@babel/plugin-proposal-private-property-in-object', { 'loose': true }],
       [resolve('@babel/plugin-syntax-dynamic-import')],
       [resolve('@babel/plugin-transform-regenerator')],
       [

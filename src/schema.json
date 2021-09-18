@@ -16,6 +16,12 @@
       "type": "string",
       "description": "the template src path, default use wx-api-docs template"
     },
+    "index": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
     "groups": {
       "type": "array",
       "items": {

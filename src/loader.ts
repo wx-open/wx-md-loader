@@ -8,21 +8,25 @@ import { Schema } from 'schema-utils/declarations/validate';
 import loaderUtils from 'loader-utils';
 import optionSchema from './schema.json';
 import path from 'path';
+import * as fs from 'fs';
 
 const localMdLoader: loader.Loader = function (source) {
   const loaderContext = this;
   const options = normalizeOptions(loaderUtils.getOptions(loaderContext));
   validate(optionSchema as Schema, options, {});
   const callback = this.async();
-  const md = new Markdown();
-  const stringSource = source.toString();
-  const obj = md.parse(stringSource, {});
-  const codeList = obj.filter((i) => i.type === 'fence');
   if (!callback) {
     return;
   }
+  const md = new Markdown();
+  const stringSource = source.toString();
+  const obj = md.parse(stringSource, {});
+  const codeList = obj
+    .filter((i) => i.type === 'fence')
+    .filter(({ info }) => ['js', 'jsx', 'ts', 'tsx'].includes(info));
   const dataType = options.type;
   if (dataType === 'code') {
+    const index = options.index!;
     const metaList = getMetaList(obj);
     let meta: Record<string, any> = {};
     if (metaList.length) {
@@ -32,16 +36,15 @@ const localMdLoader: loader.Loader = function (source) {
       callback(null, 'export default ()=>({only:true})');
       return;
     }
-
     if (!codeList.length) {
       callback(null, 'export default ()=>{}');
       return;
     }
-    let { content: res, info } = codeList[0];
-    if (!['js', 'jsx', 'ts', 'tsx'].includes(info)) {
-      callback(null, 'export default ()=>{}');
-      return;
-    }
+    let { content: res, info } = codeList[index];
+    // if (!['js', 'jsx', 'ts', 'tsx'].includes(info)) {
+    //   callback(null, 'export default ()=>{}');
+    //   return;
+    // }
     const suffix = info;
     this.resourcePath = this.resourcePath + `.${suffix}`;
     if (/x$/.test(suffix)) {
@@ -69,12 +72,17 @@ const localMdLoader: loader.Loader = function (source) {
       suffix = codeList[0].info;
     }
     const shouldFormat = ['js', 'jsx', 'ts', 'tsx'].includes(suffix);
+    const stat = fs.statSync(this.resource);
+    const ctime = stat.ctime;
+    const mtime = stat.mtime;
     const res = `export default {
           content:\`${
             !shouldFormat
               ? content
               : encodeURIComponent(format(content, suffix === 'ts' || suffix === 'tsx' ? 'typescript' : 'babel'))
           }\`,
+          ctime: "${ctime.getTime()}",
+          mtime: "${mtime.getTime()}",
           type:'${codeList[0] ? codeList[0].info : ''}',
           meta:${JSON.stringify(meta)},
           desc:'${desc}',
@@ -126,13 +134,59 @@ const localMdLoader: loader.Loader = function (source) {
   }
   const babelrc = path.resolve(__dirname, './config/babel.wx.js');
   const p1 = loaderUtils.stringifyRequest(this, '!wx-md-loader?type=page!' + this.resourcePath);
-  const p = loaderUtils.stringifyRequest(
-    this,
-    `!babel-loader?configFile=${babelrc}!wx-md-loader?type=code!${this.resourcePath}`
-  );
-  const content = `import code from ${p};
+  const codeImports: string[] = [];
+  const codeExports: [string, string, string][] = [];
+  codeList.forEach((line, index) => {
+    const p = loaderUtils.stringifyRequest(
+      this,
+      `!babel-loader?configFile=${babelrc}!wx-md-loader?type=code&index=${index}!${this.resourcePath}`
+    );
+    codeImports.push(`import code${index} from ${p}`);
+    const src = line.content.trim();
+    const codes = src.split(/[\r\n]/g);
+    const len = codes.length;
+    const comments = [];
+    let commentStart = false;
+    let commentEnd = false;
+    let codeOptions = {};
+    let content = line.content;
+    let textIndex = 0;
+    for (let i = 0; i < len; i++) {
+      const row = codes[i].trim();
+      if (/^\/\*/.test(row)) {
+        commentStart = true;
+        continue;
+      }
+      if (commentStart && /^\*\//.test(row)) {
+        commentEnd = true;
+        textIndex = i;
+        break;
+      }
+      if (commentStart && /^\*/.test(row)) {
+        comments.push(row.replace(/\s*\*+\s*/g, ''));
+      }
+    }
+
+    if (commentEnd) {
+      codeOptions = comments
+        .filter((i) => /^@(\w+)\s+(.+)/.test(i))
+        .reduce<Record<string, any>>((acc, c) => {
+          const [, key, value] = c.match(/@(\w+)\s+(.+)/)!;
+          acc[key] = value;
+          return acc;
+        }, {});
+      content = codes.slice(textIndex + 1).join('\r\n');
+    }
+    codeExports.push([`code${index}`, `\`${content}\``, JSON.stringify(codeOptions)]);
+  });
+  const content = `${codeImports.join('\r\n')};
       import html from ${p1};
-      export {code, html};`;
+      const codes = [
+        ${codeExports.map((item) => `[${item.join(', ')}]`).join(',\r\n')}
+      ];
+      export {html};
+      export {codes}
+      `;
   callback(null, content);
 };
 

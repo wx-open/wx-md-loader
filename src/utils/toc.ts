@@ -59,7 +59,7 @@ export function getTreeData(entryKey: string, pattern: string, basePath: string,
           const metaList = getMetaList(tokens);
           const routeKey = filename.replace('.md', '').replace(/\./g, '-').replace(/\//g, '-');
           const name = filename.replace(/\.md$/, '');
-          const route = `${entryKey}/${routeKey}`;
+          const route = `${entryKey}/${routeKey}`.replace(/\/+/g, '/');
           const contextPath = (ctxPath + '/' + name).replace(/^\//, '');
           mapping[routeKey] = {
             name,

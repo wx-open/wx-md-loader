@@ -20,6 +20,7 @@ export interface LoaderOptions {
   cwd?: string;
   inject?: object;
   template?: string;
+  index?: number;
 }
 
 export function normalizeOptions(o: any): Required<LoaderOptions> {
